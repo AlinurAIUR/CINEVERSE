@@ -1,0 +1,253 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Angular root */
+app-root {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+/* host занимает весь экран */
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100%;
+
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  color: #eaeaea;
+
+  position: relative;
+  overflow: hidden;
+}
+
+/* ФОН */
+:host::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+
+  background: url("/assets/bladerunner.jpg") center center / cover no-repeat fixed;
+  z-index: 0;
+}
+
+/*  OVERLAY */
+:host::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 0, 128, 0.18),
+      transparent 66%
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      rgba(0, 255, 255, 0.14),
+      transparent 55%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.45),
+      rgba(0, 0, 0, 0.55)
+    );
+
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* заголовок */
+h1 {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  font-size: 40px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 40px;
+  color: #ffffff;
+
+  text-shadow:
+    0 0 10px rgba(0, 255, 255, 0.6),
+    0 0 25px rgba(255, 0, 128, 0.35);
+}
+
+/* форма */
+form {
+  position: relative;
+  z-index: 1;
+
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 28px;
+
+  backdrop-filter: blur(12px);
+  background: rgba(10, 10, 15, 0.6);
+
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 16px;
+
+  box-shadow:
+    0 0 40px rgba(0, 255, 255, 0.08),
+    0 0 70px rgba(255, 0, 128, 0.06);
+}
+
+/* поля */
+input,
+select,
+textarea {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: block;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+
+  color: #fff;
+  outline: none;
+
+  transition: 0.25s ease;
+}
+
+/* focus */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #00ffff;
+  box-shadow:
+    0 0 10px rgba(0, 255, 255, 0.5),
+    0 0 20px rgba(255, 0, 128, 0.2);
+}
+
+/* label */
+label {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  color: #cfcfcf;
+}
+
+/* radio в линию */
+form div:has(input[type="radio"]) div {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-left: 40px;
+}
+
+form div:has(input[type="radio"]) label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0;
+  cursor: pointer;
+}
+
+/* checkbox + radio */
+input[type="checkbox"],
+input[type="radio"] {
+  width: auto;
+  accent-color: #00ffff;
+}
+
+/* ошибки */
+.error {
+  color: #ff4d6d;
+  font-size: 12px;
+  margin-top: 4px;
+  text-shadow: 0 0 6px rgba(255, 0, 0, 0.5);
+}
+
+/* кнопки */
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  transition: 0.25s ease;
+}
+
+/* submit */
+button[type="submit"] {
+  background: linear-gradient(90deg, #00ffff, #ff0077);
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.35);
+}
+
+/* reset */
+button[type="button"] {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* hover */
+button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+/* TERMS CHECKBOX FIX */
+.terms {
+  margin-top: 14px;
+}
+
+.terms label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+/* сам checkbox */
+.terms input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  accent-color: #00ffff;
+}
+
+/* текст рядом с checkbox */
+.terms span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #cfcfcf;
+}
+
+/* красная звездочка */
+.terms .req {
+  color: #ff4d6d;
+  text-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
+}
+
+/* ошибка */
+.terms .error {
+  margin-top: 6px;
+  margin-left: 28px;
+  font-size: 12px;
+  color: #ff4d6d;
+  text-shadow: 0 0 6px rgba(255, 0, 0, 0.5);
+}

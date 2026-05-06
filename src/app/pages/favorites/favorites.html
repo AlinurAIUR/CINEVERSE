@@ -1,0 +1,26 @@
+<div class="favorites">
+
+  @for (item of favorites(); track item.id) {
+
+    <div class="card">
+
+      <img alt=""
+        [src]="item.poster
+          ? 'https://image.tmdb.org/t/p/w500' + item.poster
+          : 'assets/no-image.png'"
+      />
+
+      <h3>{{ item.title }}</h3>
+      <p>{{ item.overview }}</p>
+      <p>{{ item.date }}</p>
+      <p>{{ item.rating }}</p>
+
+      <button (click)="remove(item)">
+        Remove
+      </button>
+
+    </div>
+
+  }
+
+</div>

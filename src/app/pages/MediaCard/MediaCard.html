@@ -1,0 +1,35 @@
+@if (data(); as m) {
+
+  <div class="movie-page">
+
+    <div class="movie-card movie-details">
+
+      <div class="movie-poster">
+        <img
+          [src]="m.poster_path
+            ? 'https://image.tmdb.org/t/p/w500' + m.poster_path
+            : 'assets/no-image.png'"
+          alt="poster"
+        />
+      </div>
+
+      <div class="movie-info">
+        <h3>
+          {{ isMovie() ? movie?.title : series?.name }}
+        </h3>
+        <p>{{ m.overview }}</p>
+        <p>
+          release date:
+          {{ isMovie() ? movie?.release_date : series?.first_air_date }}
+        </p>
+        <p>rating: {{ m.vote_average }}</p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+} @else {
+  <p class="loading">Loading...</p>
+}

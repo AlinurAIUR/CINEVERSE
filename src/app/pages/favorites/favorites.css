@@ -1,0 +1,137 @@
+/* контейнер */
+.favorites {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+
+  grid-template-columns: 1fr;
+
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a20 100%);
+}
+
+/* адаптив */
+@media (min-width: 600px) {
+  .favorites {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .favorites {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .favorites {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* карточка */
+.card {
+  cursor: pointer;
+
+  background: rgba(20, 20, 25, 0.7);
+
+  border: 1px solid rgba(0, 255, 255, 0.25);
+  border-radius: 12px;
+
+  padding: 16px;
+
+  box-shadow:
+    0 0 25px rgba(0, 255, 255, 0.25),
+    0 0 40px rgba(255, 0, 128, 0.25);
+
+  transition: all 0.3s ease;
+}
+
+/* hover эффект */
+.card:hover {
+  transform: translateY(-6px) scale(1.02);
+
+  box-shadow:
+    0 0 40px rgba(0, 255, 255, 0.45),
+    0 0 70px rgba(255, 0, 128, 0.35);
+}
+
+/* картинка */
+.card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 12px;
+
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.35);
+}
+
+/* заголовок */
+.card h3 {
+  color: #00fff7;
+
+  text-align: center;
+  margin-bottom: 8px;
+
+  text-shadow:
+    0 0 15px rgba(0, 255, 255, 0.8),
+    0 0 30px rgba(255, 0, 128, 0.6);
+}
+
+/* текст */
+.card p {
+  color: #cfcfcf;
+  font-size: 14px;
+
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* кнопка */
+.card button {
+  margin-top: 10px;
+  width: 100%;
+
+  padding: 8px;
+
+  color: #ff4dc4;
+
+  background: transparent;
+
+  border: 1px solid rgba(255, 0, 150, 0.5);
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+/* hover кнопки */
+.card button:hover {
+  background: rgba(255, 0, 150, 0.1);
+
+  box-shadow:
+    0 0 10px rgba(255, 0, 150, 0.4),
+    inset 0 0 6px rgba(255, 0, 150, 0.2);
+
+  transform: translateY(-1px);
+}
+
+/* active */
+.card button:active {
+  transform: scale(0.96);
+}
+
+/* пустое состояние */
+.favorites:empty::after {
+  content: "No favorites yet 😢";
+
+  display: block;
+  margin: 40px auto;
+
+  color: #b8faff;
+  text-align: center;
+
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}

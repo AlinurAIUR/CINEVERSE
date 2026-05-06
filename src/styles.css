@@ -1,1 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+
+body {
+  background: url("assets/bladerunner.jpg") center center / cover no-repeat fixed;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
