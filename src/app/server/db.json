@@ -21,6 +21,17 @@
       "comment": "haloo ",
       "agree": true,
       "id": "rHOq84R72ys"
+    },
+    {
+      "name": "Alinur Yedil",
+      "lastName": "Yedil",
+      "email": "ali.puh@mail.ru",
+      "password": "0",
+      "gender": "male",
+      "country": "kz",
+      "comment": "",
+      "agree": true,
+      "id": "7bK61n4gDBU"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

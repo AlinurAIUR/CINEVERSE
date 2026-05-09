@@ -9,8 +9,8 @@
 
   <div class="nav-right">
 
-    @if (auth.isAuth()) {
-      <button (click)="auth.logout()">Logout</button>
+    @if (isAuth$ | async) {
+      <button (click)="logout()">Logout</button>
     } @else {
       <a routerLink="/login">Login</a>
       <a routerLink="/registration">Register</a>

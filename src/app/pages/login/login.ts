@@ -1,44 +1,31 @@
-import {Component, inject} from '@angular/core';
-import {FormsModule, NgForm} from '@angular/forms';
-import { UserService } from '../../services/user.service';
-import { NotificationService } from '../../services/NotificationService';
-import { Auth } from '../../services/auth';
+import { Component, inject } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Store } from '@ngrx/store';
+
+import * as AuthActions from '../../store/auth/auth.actions';
+
 @Component({
   selector: 'app-login',
   imports: [FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-
 export class LoginComponent {
+  private store = inject(Store);
 
-
-  loginData={
-    email:"",
-    password:"",
-  }
-
-
-  private userService= inject(UserService) ;
-  private auth= inject(Auth)
-  private notification= inject(NotificationService)
-
+  loginData = {
+    email: '',
+    password: '',
+  };
 
   onSubmit(form: NgForm) {
-    if (form.valid) {
-      this.userService.getUsers().subscribe(users => {
+    if (!form.valid) return;
 
-        const user = users.find(u =>
-        u.email === this.loginData.email &&
-        u.password === this.loginData.password
-        );
-        if (user) {
-          this.auth.login(user);
-          this.notification.success('Login success');
-        }else {
-          this.notification.error('Error Login');
-        }
+    this.store.dispatch(
+      AuthActions.login({
+        email: this.loginData.email,
+        password: this.loginData.password,
       })
-    }
+    );
   }
 }

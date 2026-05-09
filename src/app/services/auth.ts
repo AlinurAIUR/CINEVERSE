@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
+import {User} from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Auth{
-  private currentUser: any = null;
+  private currentUser: User | null = null;
 
-  login(user: any) {
+  login(user: User) {
     this.currentUser = user;
     localStorage.setItem('user', JSON.stringify(user));
   }
