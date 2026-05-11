@@ -4,104 +4,116 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   signal,
-  OnDestroy
+  OnDestroy,
+  inject,
 } from '@angular/core';
 
-import {FormsModule, NgForm, NgModel} from '@angular/forms';
+import { FormsModule, NgForm, NgModel } from '@angular/forms';
+import { AsyncPipe } from '@angular/common';
 
 import {
   debounceTime,
-  switchMap,
-  tap,
   EMPTY,
-  catchError,
-  combineLatestWith,
   Subject,
-  takeUntil
+  takeUntil,
+  tap,
 } from 'rxjs';
 
+import { Store } from '@ngrx/store';
+
 import { User } from '../../interfaces/user';
-import { UserService } from '../../services/user.service';
-import { NotificationService } from '../../services/NotificationService';
+import * as RegistrationActions from '../../store/registration/registration.actions';
+
+import {
+  selectEmailTaken,
+  selectIsCreatingUser,
+  selectRegistrationSuccess,
+} from '../../store/registration/registration.selectors';
 
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, AsyncPipe],
   templateUrl: './registration.html',
   styleUrl: './registration.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Registration implements AfterViewInit, OnDestroy {
-
+  private store = inject(Store);
   private destroy$ = new Subject<void>();
 
   initialUser: User = {
     name: '',
     lastName: '',
     email: '',
-    password:'',
+    password: '',
     gender: 'male',
     country: 'us',
     comment: '',
-    agree: true
+    agree: true,
   };
 
   user: User = structuredClone(this.initialUser);
 
   unableSubmit = signal(false);
 
+  emailTaken$ = this.store.select(selectEmailTaken);
+  isCreatingUser$ = this.store.select(selectIsCreatingUser);
+  success$ = this.store.select(selectRegistrationSuccess);
+
   @ViewChild('emailRef') emailRef!: NgModel;
   @ViewChild('userForm') userForm!: NgForm;
-
-  constructor(
-    private userService: UserService,
-    private notification: NotificationService
-  ) {}
 
   ngAfterViewInit() {
     this.emailRef.valueChanges
       ?.pipe(
-        tap(() => this.unableSubmit.set(false)),
+        tap(() => {
+          this.unableSubmit.set(false);
+          this.store.dispatch(RegistrationActions.resetRegistrationState());
+        }),
 
         debounceTime(1000),
 
-        switchMap((email) => {
+        tap(email => {
           if (
             this.emailRef.hasError('email') ||
-            this.emailRef.hasError('required')
+            this.emailRef.hasError('required') ||
+            !email
           ) {
-            return EMPTY;
+            return;
           }
 
-          return this.userService.checkEmail(email).pipe(
-            tap((emailTaken) => {
-              if (emailTaken) {
-                this.emailRef.control.setErrors({ emailTaken: true });
-              } else {
-                const errors = this.emailRef.control.errors || {};
-                delete errors['emailTaken'];
-
-                this.emailRef.control.setErrors(
-                  Object.keys(errors).length ? errors : null
-                );
-              }
-            })
+          this.store.dispatch(
+            RegistrationActions.checkEmail({ email })
           );
         }),
 
-        catchError(() => {
-          this.notification.error('Error', 'Email check failed');
-          return EMPTY;
-        }),
-
-        combineLatestWith(this.userForm.statusChanges!),
-
         takeUntil(this.destroy$)
       )
-      .subscribe(([emailTaken]) => {
+      .subscribe();
+
+    this.emailTaken$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(emailTaken => {
         if (emailTaken) {
+          this.emailRef.control.setErrors({ emailTaken: true });
           this.unableSubmit.set(true);
+        } else {
+          const errors = this.emailRef.control.errors || {};
+          delete errors['emailTaken'];
+
+          this.emailRef.control.setErrors(
+            Object.keys(errors).length ? errors : null
+          );
+        }
+      });
+
+    this.success$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(success => {
+        if (success) {
+          this.userForm.resetForm(this.initialUser);
+          this.store.dispatch(RegistrationActions.resetRegistrationState());
         }
       });
   }
@@ -117,15 +129,11 @@ export class Registration implements AfterViewInit, OnDestroy {
 
   onSubmit(userForm: NgForm) {
     if (userForm.valid) {
-      this.userService.createUser(userForm.value).subscribe({
-        next: () => {
-          this.notification.success('Success', 'User created');
-          userForm.resetForm(this.initialUser);
-        },
-        error: () => {
-          this.notification.error('Error', 'Creation failed');
-        }
-      });
+      this.store.dispatch(
+        RegistrationActions.createUser({
+          user: userForm.value,
+        })
+      );
     }
   }
 }

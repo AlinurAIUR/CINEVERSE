@@ -1,4 +1,4 @@
-<h1 #regheader> создание пользователя </h1>
+<h1 #regheader>создание пользователя</h1>
 
 <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)">
 
@@ -12,7 +12,8 @@
       required
       #nameRef="ngModel"
     />
-    @if(checkFieldStatus(nameRef)) {
+
+    @if (checkFieldStatus(nameRef)) {
       <p class="error">name mandatory</p>
     }
   </div>
@@ -27,7 +28,8 @@
       required
       #lastNameRef="ngModel"
     />
-    @if(checkFieldStatus(lastNameRef)) {
+
+    @if (checkFieldStatus(lastNameRef)) {
       <p class="error">last name mandatory</p>
     }
   </div>
@@ -44,50 +46,69 @@
       #emailRef="ngModel"
     />
 
-    @if(checkFieldStatus(emailRef) && emailRef.errors?.['email']) {
+    @if (checkFieldStatus(emailRef) && emailRef.errors?.['required']) {
+      <p class="error">email is mandatory</p>
+    }
+
+    @if (checkFieldStatus(emailRef) && emailRef.errors?.['email']) {
       <p class="error">Email incorrect</p>
     }
 
-    @if(emailRef.errors?.['emailTaken']) {
+    @if (emailRef.errors?.['emailTaken']) {
       <p class="error">Email already registered</p>
-    }
-    @if(checkFieldStatus(emailRef)) {
-      <p class="error">email is mandatory</p>
     }
   </div>
 
   <div>
     <label for="password">password <span>*</span>:</label>
     <input
-      type="text"
+      type="password"
       name="password"
       id="password"
       [(ngModel)]="user.password"
       required
       #passwordRef="ngModel"
     />
-    @if(checkFieldStatus(passwordRef)) {
+
+    @if (checkFieldStatus(passwordRef)) {
       <p class="error">password is mandatory</p>
     }
   </div>
+
   <div>
     <label>sex:</label>
+
     <div>
       <label>
-        <input type="radio" name="gender" value="male" [(ngModel)]="user.gender">
+        <input
+          type="radio"
+          name="gender"
+          value="male"
+          [(ngModel)]="user.gender"
+        />
         male
       </label>
 
       <label>
-        <input type="radio" name="gender" value="female" [(ngModel)]="user.gender">
+        <input
+          type="radio"
+          name="gender"
+          value="female"
+          [(ngModel)]="user.gender"
+        />
         female
       </label>
     </div>
   </div>
 
   <div>
-    <label>Country</label>
-    <select name="country" [(ngModel)]="user.country">
+    <label for="country">Country</label>
+
+    <select
+      name="country"
+      id="country"
+      [(ngModel)]="user.country"
+    >
       <option value="kz">Kazakhstan</option>
       <option value="us">USA</option>
       <option value="uk">United Kingdom</option>
@@ -96,11 +117,12 @@
 
   <div>
     <label for="comment">comment</label>
+
     <textarea
       name="comment"
       id="comment"
-      [(ngModel)]="user.comment">
-    </textarea>
+      [(ngModel)]="user.comment"
+    ></textarea>
   </div>
 
   <div class="terms">
@@ -115,21 +137,25 @@
       agreed with terms of use <span class="req">*</span>
     </label>
 
-    @if(checkFieldStatus(agreeRef)) {
+    @if (checkFieldStatus(agreeRef)) {
       <p class="error">confirm agreement</p>
     }
   </div>
 
   <div class="buttons">
-    <button type="submit" [disabled]="userForm.invalid || unableSubmit()">
+    <button
+      type="submit"
+      [disabled]="userForm.invalid || unableSubmit()"
+    >
       create
     </button>
 
-    <button type="button" (click)="userForm.resetForm(initialUser)">
+    <button
+      type="button"
+      (click)="userForm.resetForm(initialUser)"
+    >
       reset
     </button>
   </div>
 
 </form>
-
-

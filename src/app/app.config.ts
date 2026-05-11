@@ -21,6 +21,10 @@ import { authReducer } from './store/auth/auth.reducer';
 import { AuthEffect } from './store/auth/auth.effects';
 import {MoviesEffects} from './store/movies/movies.effects';
 import {moviesReducer} from './store/movies/movies.reducer';
+import {seriesReducer} from './store/series/series.reducer';
+import {SeriesEffects} from './store/series/series.effects';
+import {registrationReducer} from './store/registration/registration.reducer';
+import { RegistrationEffects } from './store/registration/registration.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,6 +43,8 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       auth: authReducer,
       movies: moviesReducer,
+      series: seriesReducer,
+      registration: registrationReducer,
     }),
 
     provideStoreDevtools({
@@ -49,6 +55,9 @@ export const appConfig: ApplicationConfig = {
     provideEffects([
       AuthEffect,
       MoviesEffects,
+      SeriesEffects,
+      RegistrationEffects,
+
     ]),
   ],
 };
