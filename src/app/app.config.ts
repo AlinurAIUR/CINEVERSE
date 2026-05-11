@@ -19,6 +19,8 @@ import { exampleInterceptor } from './interceptors/example-interceptor';
 
 import { authReducer } from './store/auth/auth.reducer';
 import { AuthEffect } from './store/auth/auth.effects';
+import {MoviesEffects} from './store/movies/movies.effects';
+import {moviesReducer} from './store/movies/movies.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -36,6 +38,7 @@ export const appConfig: ApplicationConfig = {
 
     provideStore({
       auth: authReducer,
+      movies: moviesReducer,
     }),
 
     provideStoreDevtools({
@@ -45,6 +48,7 @@ export const appConfig: ApplicationConfig = {
 
     provideEffects([
       AuthEffect,
+      MoviesEffects,
     ]),
   ],
 };

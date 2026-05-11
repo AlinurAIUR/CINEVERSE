@@ -1,66 +1,82 @@
-@if (isLoading()){
-  <p> loading </p>
+@if (isLoading$ | async) {
+  <p>loading</p>
 } @else {
   <div class="search-box">
     <input
-      [ngModel]="query()"
-      (ngModelChange)="query.set($event)"
-      placeholder="Search series..."
+      [ngModel]="queryInput()"
+      (ngModelChange)="queryInput.set($event)"
+      placeholder="Search movies..."
     />
+
     <button
       (click)="searchMovies()"
-      [disabled]="!query().trim()">
+      [disabled]="!queryInput().trim()"
+    >
       Search
     </button>
-
-
   </div>
 
   <div class="movies">
-    @for (movie of movies();track movie.id){
-      <div class="movie-card"
-           [routerLink]="['/movie', movie.id]">
-        <img alt=""
+    @for (movie of movies$ | async; track movie.id) {
+      <div
+        class="movie-card"
+        [routerLink]="['/movie', movie.id]"
+      >
+        <img
+          alt=""
           [src]="movie.poster_path
-    ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path
-    : 'assets/no-image.png'"
+            ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path
+            : 'assets/no-image.png'"
           loading="lazy"
         />
-        <h3> {{movie.title}}</h3>
-        <p> {{movie.overview}}</p>
+
+        <h3>{{ movie.title }}</h3>
+        <p>{{ movie.overview }}</p>
+
         <button (click)="addToFavorites(movie); $event.stopPropagation()">
           favorites ⭐
         </button>
-
       </div>
     }
-
   </div>
-  <div class="pagination">
 
-    <button (click)="prevPage()" [disabled]="page() === 1">
-      previous
-    </button>
+  @if (page$ | async; as page) {
+    @if (totalPages$ | async; as totalPages) {
+      @if (query$ | async; as query) {
+        @if (isSearchMode$ | async; as isSearchMode) {
+          <div class="pagination">
+            <button
+              (click)="prevPage(page, query, isSearchMode)"
+              [disabled]="page === 1"
+            >
+              previous
+            </button>
 
-    <div class="pages">
-      @for (p of getPages(); track p) {
-        <button
-          class="page-btn"
-          [class.active]="p === page()"
-          (click)="goToPage(p)"
-        >
-          {{ p }}
-        </button>
+            <div class="pages">
+              @for (p of visiblePages$ | async; track p) {
+                <button
+                  class="page-btn"
+                  [class.active]="p === page"
+                  (click)="goToPage(p, query, isSearchMode)"
+                >
+                  {{ p }}
+                </button>
+              }
+            </div>
+
+            <p class="p-pagination">
+              Page {{ page }} / {{ totalPages }}
+            </p>
+
+            <button
+              (click)="nextPage(page, totalPages, query, isSearchMode)"
+              [disabled]="page >= totalPages"
+            >
+              next
+            </button>
+          </div>
+        }
       }
-    </div>
-
-    <p class="p-pagination">
-      Page {{ page() }} / {{ totalPages() }}
-    </p>
-
-    <button (click)="nextPage()" [disabled]="page() >= totalPages()">
-      next
-    </button>
-
-  </div>
+    }
+  }
 }

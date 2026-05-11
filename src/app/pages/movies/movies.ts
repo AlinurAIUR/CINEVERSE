@@ -1,81 +1,95 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MoviesAPI } from '../../services/moviesAPI';
+import { AsyncPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
+
 import { Movie } from '../../interfaces/movie.interface';
-import { NotificationService } from '../../services/NotificationService';
-import {Router, RouterLink} from '@angular/router';
 import { Favorite } from '../../services/favorite';
+
+import * as MoviesActions from '../../store/movies/movies.actions';
+
+import {
+  selectMovies,
+  selectIsLoading,
+  selectMoviesError,
+  selectPage,
+  selectTotalPages,
+  selectVisiblePages,
+  selectQuery,
+  selectIsSearchMode,
+} from '../../store/movies/movies.selectors';
+
 @Component({
   selector: 'app-movies',
   templateUrl: './movies.html',
   styleUrl: './movies.css',
-  imports: [FormsModule, RouterLink]
+  imports: [FormsModule, RouterLink, AsyncPipe],
 })
-
 export class Movies implements OnInit {
-
-  private moviesAPI = inject(MoviesAPI);
-  private Notification=inject(NotificationService);
-  private router = inject(Router);
+  private store = inject(Store);
   private favorite = inject(Favorite);
 
-  movies = signal<Movie[]> ([])
-  isLoading = signal(false)
-  page = signal(1);
-  totalPages = signal(0);
-  query = signal('');
+  queryInput = signal('');
+
+  movies$ = this.store.select(selectMovies);
+  isLoading$ = this.store.select(selectIsLoading);
+  error$ = this.store.select(selectMoviesError);
+  page$ = this.store.select(selectPage);
+  totalPages$ = this.store.select(selectTotalPages);
+  visiblePages$ = this.store.select(selectVisiblePages);
+  query$ = this.store.select(selectQuery);
+  isSearchMode$ = this.store.select(selectIsSearchMode);
+
   ngOnInit() {
-    this.loadMovies()
+    this.store.dispatch(MoviesActions.loadMovies({ page: 1 }));
   }
-  loadMovies(){
-    this.isLoading.set(true);
-    this.moviesAPI.getPopularMovies(this.page()).subscribe({
-      next:(res) =>{
-        this.movies.set(res.results)
-        this.page.set(res.page)
-        this.totalPages.set(res.total_pages)
-        this.isLoading.set(false);
 
-      },
-  error:(err) => {
-    console.error(err);
-    this.Notification.error('error occurred');
-        this.isLoading.set(false);
-      }
-    })
-  }
-  getPages(): number[] {
-    const total = this.totalPages();
-    const current = this.page();
-    const pages: number[] = [];
-    const start = Math.max(1, current - 3);
-    const end = Math.min(total, current + 3);
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    return pages;
-  }
-  // PAGIANTION
-  goToPage(p: number) {
-    this.page.set(p);
-    this.loadMovies();
-  }
-  nextPage() {
-    if (this.page() < this.totalPages()) {
-      this.page.update(p => p + 1);
-      this.loadMovies();
+  goToPage(page: number, query: string, isSearchMode: boolean) {
+    if (isSearchMode && query.trim()) {
+      this.store.dispatch(
+        MoviesActions.searchMovies({
+          query,
+          page,
+        })
+      );
+    } else {
+      this.store.dispatch(
+        MoviesActions.loadMovies({
+          page,
+        })
+      );
     }
   }
 
-  prevPage() {
-    if (this.page() > 1) {
-      this.page.update(p => p - 1);
-      this.loadMovies();
+  nextPage(page: number, totalPages: number, query: string, isSearchMode: boolean) {
+    if (page < totalPages) {
+      this.goToPage(page + 1, query, isSearchMode);
     }
   }
-  // FAVORITES
+
+  prevPage(page: number, query: string, isSearchMode: boolean) {
+    if (page > 1) {
+      this.goToPage(page - 1, query, isSearchMode);
+    }
+  }
+
+  searchMovies() {
+    const query = this.queryInput().trim();
+
+    if (!query) {
+      this.store.dispatch(MoviesActions.loadMovies({ page: 1 }));
+      return;
+    }
+
+    this.store.dispatch(
+      MoviesActions.searchMovies({
+        query,
+        page: 1,
+      })
+    );
+  }
+
   addToFavorites(movie: Movie) {
     this.favorite.add({
       id: movie.id,
@@ -84,28 +98,7 @@ export class Movies implements OnInit {
       poster: movie.poster_path,
       date: movie.release_date,
       rating: movie.vote_average,
-      type: 'movie'
+      type: 'movie',
     });
   }
-  //  SEARCH
-  searchMovies(){
-    this.isLoading.set(true);
-    this.page.set(1);
-    this.moviesAPI.searchMovies(this.query(), this.page()).subscribe({
-      next: (res) => {
-        this.movies.set(res.results)
-
-        this.totalPages.set(res.total_pages)
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error(err);
-        this.Notification.error('error occurred');
-        this.isLoading.set(false);
-      }
-    })
-  }
-
-
 }
-
